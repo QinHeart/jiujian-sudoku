@@ -179,6 +179,10 @@ function render() {
   $("pause-state").hidden = !paused;
   $("rest").hidden = !paused || !$("cover").hidden;
   $("pause").textContent = paused ? "▷" : "Ⅱ";
+  const completed = !!game?.finished && !loading;
+  $("game-screen").classList.toggle("is-complete", completed);
+  $("completion").hidden = !completed;
+  if (completed) $("completion-time").textContent = `用时 ${Math.floor(game.seconds / 60)} 分 ${game.seconds % 60} 秒`;
   const locked = onHome || loading || !game || paused || game.finished;
   $("notes").setAttribute("aria-pressed", String(noteMode));
   $("note-state").textContent = noteMode ? "开" : "关";
@@ -291,15 +295,14 @@ function input(n) {
   }
   if (game.values.every(Boolean) && Sudoku.valid(game.values)) {
     game.finished = true;
-    showCover(
-      "刚刚好，全部归位。",
-      `你用 ${Math.floor(game.seconds / 60)} 分 ${game.seconds % 60} 秒，完成了这一方九宫。`,
-      "再来一局",
-    );
+    selected = -1;
+    noteMode = false;
+    $("cover").hidden = true;
   }
   save();
   render();
 }
+$("finish-next").onclick = () => start();
 $("notes").onclick = () => {
   noteMode = !noteMode;
   render();
