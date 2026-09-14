@@ -1,0 +1,9 @@
+{
+  "name": "jiujian-sudoku",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node test-engine.cjs",
+    "start": "python3 -m http.server 4173"
+  }
+}

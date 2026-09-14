@@ -1,0 +1,543 @@
+:root {
+  --paper: #f5f3ec;
+  --ink: #293e35;
+  --muted: #8b9184;
+  --green: #416a58;
+  --line: #ced1c3;
+  --serif: "Noto Serif SC", "Songti SC", serif;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #9b6c36;
+  outline-offset: 3px;
+}
+button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+button {
+  touch-action: manipulation;
+}
+.plain {
+  background: none;
+  border: 0;
+  font-size: 12px;
+  color: #747e6e;
+  padding: 8px;
+}
+.plain span {
+  margin-left: 13px;
+}
+.eyebrow {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #6c7d66;
+}
+.game-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 11px;
+}
+.tag {
+  background: #e7eadc;
+  padding: 6px 10px;
+  border-radius: 4px;
+  color: #63754d;
+}
+.puzzle-id {
+  margin-left: 12px;
+  color: #949a8a;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+  color: #697764;
+}
+.pause {
+  border: 0;
+  background: none;
+  padding: 5px 2px 5px 10px;
+  color: #7c8672;
+}
+.board-wrap {
+  position: relative;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  border: 2px solid #657662;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fdfcf7;
+  box-shadow: 0 12px 36px #3c4f3310;
+  aspect-ratio: 1;
+}
+.cell {
+  position: relative;
+  border: 0;
+  border-right: 1px solid #dde0d3;
+  border-bottom: 1px solid #dde0d3;
+  background: transparent;
+  padding: 0;
+  font-size: 25px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  color: #437b69;
+  font-variant-numeric: tabular-nums;
+}
+.cell.given {
+  color: #374b3c;
+  font-weight: 500;
+}
+.cell:nth-child(3n) {
+  border-right: 2px solid #91a087;
+}
+.cell:nth-child(9n) {
+  border-right: 0;
+}
+.cell:nth-child(n + 19):nth-child(-n + 27),
+.cell:nth-child(n + 46):nth-child(-n + 54) {
+  border-bottom: 2px solid #91a087;
+}
+.cell:nth-child(n + 73) {
+  border-bottom: 0;
+}
+.cell.related {
+  background: #eff1e7;
+}
+.cell.same {
+  background: #e0e8d8;
+}
+.cell.selected {
+  background: #d4e2cd;
+  box-shadow: inset 0 0 0 2px #72936a;
+  z-index: 1;
+}
+.cell.conflict {
+  color: #b85147;
+  background: #f5e3db;
+}
+.cell.selected.conflict {
+  box-shadow: inset 0 0 0 2px #bd796b;
+}
+.pencil {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  height: 90%;
+  width: 90%;
+  font-size: 10px;
+  color: #7d8c73;
+  align-items: center;
+  text-align: center;
+}
+.board-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  font-size: 11px;
+  color: #939987;
+  min-height: 16px;
+  gap: 8px;
+}
+#progress {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.progress-track {
+  height: 2px;
+  background: #e3e5d8;
+  margin-top: 10px;
+}
+.progress-track > div {
+  height: 100%;
+  background: #8b9d6b;
+  transition: width 0.2s;
+}
+.controls {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 21px 0 18px;
+}
+.controls button {
+  background: none;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 10px 0;
+  border-radius: 6px;
+  color: #738165;
+}
+.controls button > span {
+  font-size: 20px;
+  line-height: 20px;
+}
+.controls button small {
+  font-size: 8px;
+  padding: 2px 3px;
+  background: #e5e8dc;
+  border-radius: 3px;
+}
+.controls button[aria-pressed="true"] {
+  background: #e0e8d6;
+  border-color: #c4d1b7;
+  color: #42623b;
+}
+.controls button:hover:not(:disabled) {
+  background: #e8ecde;
+}
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 7px;
+}
+.keypad button {
+  border: 1px solid #dce0d0;
+  border-radius: 7px;
+  background: #eceee2;
+  min-height: 58px;
+  font-size: 24px;
+  color: #536c46;
+  box-shadow: 0 2px 0 #dce0cf;
+}
+.keypad button:hover {
+  background: #dce5cf;
+}
+.keypad small {
+  display: block;
+  font-size: 8px;
+  color: #8d997b;
+  margin-top: 3px;
+}
+.game-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 17px;
+  min-height: 32px;
+  font-size: 9px;
+  color: #969d8a;
+}
+.game-footer i {
+  display: inline-block;
+  height: 4px;
+  width: 4px;
+  background: #91a77c;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.game-footer button {
+  font-size: 10px;
+}
+.cover {
+  position: absolute;
+  inset: 0;
+  background: #f5f3ecf5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 4;
+  padding: 20px;
+}
+.cover[hidden] {
+  display: none;
+}
+.cover-mark {
+  font-family: var(--serif);
+  font-size: 56px;
+  color: #81956e;
+}
+.cover h2,
+dialog h2 {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 400;
+}
+.cover p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #7d8972;
+}
+.primary,
+.secondary {
+  border: 0;
+  border-radius: 6px;
+  padding: 12px 22px;
+  font-size: 12px;
+}
+.primary {
+  background: var(--green);
+  color: #fff;
+}
+.secondary {
+  background: #e8ecdf;
+  color: #647757;
+}
+.cover .primary {
+  margin-top: 15px;
+}
+dialog {
+  border: 1px solid #d9decd;
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 35px;
+  width: min(420px, calc(100% - 36px));
+  box-shadow: 0 25px 100px #23352525;
+}
+dialog::backdrop {
+  background: #23352555;
+  backdrop-filter: blur(3px);
+}
+.close {
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  border: 0;
+  background: none;
+  font-size: 25px;
+  color: #89927e;
+}
+#dialog-body {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #78816f;
+}
+#dialog-body p {
+  margin: 12px 0;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+/* One compact playing surface; reserve height for every control. */
+:root {
+  --board-size: min(
+    560px,
+    calc(100vw - 32px),
+    max(240px, calc(100dvh - 310px))
+  );
+}
+body {
+  min-height: 100dvh;
+  padding: 0 16px env(safe-area-inset-bottom);
+}
+.header {
+  width: var(--board-size);
+  margin: 0 auto;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--serif);
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 1px solid #84927a;
+  border-radius: 8px;
+  font-family: var(--serif);
+  font-size: 26px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+.brand-mark > span {
+  display: block;
+  transform: translateY(-2px);
+}
+.brand {
+  line-height: 1;
+}
+
+.brand small {
+  display: none;
+}
+main {
+  width: var(--board-size);
+  margin: 0 auto;
+  padding: 0 0 14px;
+}
+.game {
+  width: 100%;
+}
+.game-top {
+  height: 30px;
+  margin-bottom: 10px;
+}
+.board {
+  grid-template-rows: repeat(9, 1fr);
+}
+.cell {
+  min-height: 0;
+  font-size: clamp(21px, calc(var(--board-size) / 18), 31px);
+}
+.board-meta {
+  margin-top: 10px;
+  line-height: 16px;
+}
+.progress-track {
+  margin-top: 7px;
+}
+.controls {
+  margin: 10px 0;
+  gap: 5px;
+}
+.controls button {
+  min-height: 40px;
+  padding: 8px 0;
+}
+.keypad {
+  gap: 6px;
+}
+.keypad button {
+  min-height: 50px;
+}
+.game-footer {
+  min-height: 28px;
+  margin-top: 8px;
+}
+.pencil {
+  font-size: clamp(8px, calc(var(--board-size) / 43), 12px);
+}
+@media (max-width: 400px) {
+  .keypad {
+    gap: 4px;
+  }
+  .keypad button {
+    font-size: 22px;
+  }
+  .controls button {
+    gap: 4px;
+  }
+  .puzzle-id {
+    margin-left: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+/* Selection uses a fill, so it never doubles a palace or outside border. */
+.cell.selected,
+.cell.selected.conflict {
+  box-shadow: none;
+}
+.cell.selected {
+  background: #cfdfc5;
+}
+.cell.selected.conflict {
+  background: #f1d9ce;
+}
+.cell:focus-visible {
+  outline: 2px solid #72936a;
+  outline-offset: -5px;
+}
+.cell:disabled {
+  opacity: 1;
+}
+[hidden] {
+  display: none !important;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+#pause-state {
+  font-size: 10px;
+  color: #7d8972;
+  margin-left: 8px;
+}
+#think {
+  margin-top: 12px;
+}
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(28px, 9vh, 90px) 0 24px;
+}
+.home-symbol {
+  font-family: var(--serif);
+  font-size: 68px;
+  line-height: 1.3;
+  color: #82976e;
+}
+.home h1 {
+  font-family: var(--serif);
+  font-size: clamp(20px, 4vw, 26px);
+  font-weight: 400;
+  margin: 22px 0 4px;
+}
+.home p {
+  font-size: 13px;
+  color: #8b9480;
+  margin: 12px 0 38px;
+}
+.home > button {
+  width: min(100%, 280px);
+  min-height: 48px;
+  margin-bottom: 12px;
+}
+.home > small {
+  font-size: 10px;
+  color: #939b89;
+  margin-top: 14px;
+}
+.home #home-new span {
+  margin-left: 12px;
+}
+
+#rest { font-size:10px; padding:4px 6px; margin-left:4px; text-decoration:underline; text-underline-offset:3px; }
+.home > small { font-size:12px; font-weight:400; color:#7c8873; letter-spacing:1px; }
