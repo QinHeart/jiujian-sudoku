@@ -801,3 +801,34 @@ dialog::backdrop {
     font-size: 16px;
   }
 }
+
+/* Branding lives on the home screen; play keeps only navigation. */
+.header {
+  justify-content: flex-end;
+}
+@media (orientation: landscape) and (min-width: 650px) {
+  .play-panel {
+    justify-content: center;
+  }
+  .keypad {
+    flex: none;
+    width: min(100%, max(0px, calc(var(--board-size) - 160px)));
+    aspect-ratio: 1;
+    align-self: center;
+  }
+  .keypad button {
+    padding: 2px;
+    line-height: 1.1;
+  }
+  .keypad small {
+    line-height: 1.1;
+  }
+}
+@media (orientation: landscape) and (min-width: 650px) and (max-height: 520px) {
+  .keypad {
+    width: min(100%, max(0px, calc(var(--board-size) - 124px)));
+  }
+  .keypad button {
+    font-size: 21px;
+  }
+}
