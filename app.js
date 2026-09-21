@@ -13,6 +13,8 @@ let game = null,
   dialogAction = null;
 let started = false;
 let onHome = true;
+let inputMode = "cell",
+  pickedNumber = 0;
 function read() {
   try {
     const g = JSON.parse(localStorage.getItem(KEY));
@@ -44,7 +46,10 @@ function read() {
   return null;
 }
 previous = read();
-if (previous?.finished) previous = null;
+if (previous?.finished) {
+  SudokuRecords.add(previous);
+  previous = null;
+}
 function save() {
   if (!game || !started) return;
   previous = null;
@@ -120,6 +125,8 @@ async function start() {
     selected = -1;
     history = [];
     noteMode = false;
+    $("export-status").textContent = "";
+    pickedNumber = 0;
     started = true;
     loading = false;
     $("cover").hidden = true;
@@ -159,6 +166,7 @@ const cells = Array.from({ length: 81 }, (_, i) => {
     )
       return;
     selected = i;
+    if (inputMode === "digit" && pickedNumber && !paused) input(pickedNumber);
     render();
   });
   $("board").append(b);
@@ -168,9 +176,26 @@ for (let n = 1; n <= 9; n++) {
   let b = document.createElement("button");
   b.innerHTML = n + "<small>9</small>";
   b.setAttribute("aria-label", "填入 " + n);
-  b.addEventListener("click", () => input(n));
+  b.addEventListener("click", () => chooseDigit(n));
   $("keypad").append(b);
 }
+function chooseDigit(n) {
+  if (!game || onHome || loading || paused || game.finished) return;
+  if (inputMode === "digit") {
+    pickedNumber = pickedNumber === n ? 0 : n;
+    render();
+  } else input(n);
+}
+$("mode-cell").onclick = () => {
+  inputMode = "cell";
+  pickedNumber = 0;
+  render();
+};
+$("mode-digit").onclick = () => {
+  inputMode = "digit";
+  pickedNumber = 0;
+  render();
+};
 function render() {
   $("home").hidden = !onHome;
   $("game-screen").hidden = onHome;
@@ -182,8 +207,19 @@ function render() {
   const completed = !!game?.finished && !loading;
   $("game-screen").classList.toggle("is-complete", completed);
   $("completion").hidden = !completed;
-  if (completed) $("completion-time").textContent = `用时 ${Math.floor(game.seconds / 60)} 分 ${game.seconds % 60} 秒`;
+  if (completed)
+    $("completion-time").textContent =
+      `用时 ${Math.floor(game.seconds / 60)} 分 ${game.seconds % 60} 秒`;
   const locked = onHome || loading || !game || paused || game.finished;
+  $("mode-cell").setAttribute("aria-pressed", String(inputMode === "cell"));
+  $("mode-digit").setAttribute("aria-pressed", String(inputMode === "digit"));
+  $("mode-cell").disabled = locked;
+  $("mode-digit").disabled = locked;
+  $("game-screen").classList.toggle("note-active", noteMode && !locked);
+  $("game-screen").classList.toggle(
+    "digit-active",
+    inputMode === "digit" && !locked,
+  );
   $("notes").setAttribute("aria-pressed", String(noteMode));
   $("note-state").textContent = noteMode ? "开" : "关";
   for (const id of ["notes", "erase", "undo", "pause"]) $(id).disabled = locked;
@@ -195,7 +231,12 @@ function render() {
   [...$("keypad").children].forEach((b) => (b.disabled = locked));
   if (!game) return;
   const bad = conflicts(),
-    value = selected >= 0 ? game.values[selected] : 0;
+    value =
+      inputMode === "digit" && pickedNumber
+        ? pickedNumber
+        : selected >= 0
+          ? game.values[selected]
+          : 0;
   cells.forEach((b, i) => {
     const n = game.values[i];
     b.className =
@@ -236,15 +277,32 @@ function render() {
       : bad.size
         ? "红色数字不正确，可以擦除或修改"
         : noteMode
-          ? "笔记模式 · 记录可能的数字"
-          : "选择空格，填入数字";
-  $("status").style.color = bad.size ? "#b85147" : "";
+          ? inputMode === "digit"
+            ? pickedNumber
+              ? `笔记 · 点格标记 ${pickedNumber}`
+              : "笔记 · 先选数字，再点格"
+            : "笔记模式 · 填入候选数"
+          : inputMode === "digit"
+            ? pickedNumber
+              ? `连续填 ${pickedNumber} · 点击目标格`
+              : "先选数字，再连续点击格子"
+            : "选择空格，填入数字";
+  $("status").style.color = bad.size ? "#b43144" : "";
   [...$("keypad").children].forEach((b, k) => {
     let left =
       9 -
       game.values.filter((n, i) => n === k + 1 && n === game.solution[i])
         .length;
     b.querySelector("small").textContent = left <= 0 ? "齐" : "余 " + left;
+    b.classList.toggle("digit-complete", left <= 0);
+    b.classList.toggle(
+      "picked",
+      inputMode === "digit" && pickedNumber === k + 1,
+    );
+    b.setAttribute(
+      "aria-pressed",
+      String(inputMode === "digit" && pickedNumber === k + 1),
+    );
     b.title = "数字 " + (k + 1) + " 还需正确填写 " + left + " 个";
   });
   updateTimer();
@@ -295,6 +353,8 @@ function input(n) {
   }
   if (game.values.every(Boolean) && Sudoku.valid(game.values)) {
     game.finished = true;
+    game.completedAt = new Date().toISOString();
+    SudokuRecords.add(game);
     selected = -1;
     noteMode = false;
     $("cover").hidden = true;
@@ -303,6 +363,8 @@ function input(n) {
   render();
 }
 $("finish-next").onclick = () => start();
+$("finish-save").onclick = () =>
+  SudokuRecords.download(game, $("export-status"), $("finish-save"));
 $("notes").onclick = () => {
   noteMode = !noteMode;
   render();
@@ -345,7 +407,7 @@ $("cancel").onclick = () => $("dialog").close();
 $("help").onclick = () =>
   modal(
     "九宫之间，自有章法。",
-    "<p>在空格里填入 1～9，使每一行、每一列、每个 3×3 小宫都没有重复数字。深色数字是题目给定的，无法修改。</p><p>点击空格，再点击下方数字。开启「笔记」可记录候选数，擦除和撤销让你放心尝试。</p><p>正式填写的数字会立即核对唯一解，错误会标红；笔记不判错。</p><p>电脑快捷键：数字 1～9 输入，方向键移动，N 切换笔记，Backspace 擦除，Ctrl / ⌘ + Z 撤销。</p><p>每道题实时生成，经过唯一解和基础逻辑可解检查。关闭后可以从主页「继续游戏」找回进度。「还剩」是待填写或改正的格子数，数字键上的「余」是该数字还需正确填写的个数。暂停后棋盘保持清晰可见，停止计时和填写；点击「休息一下」可遮住棋盘，点击计时器旁的继续按钮恢复。</p>",
+    "<p>在空格里填入 1～9，使每一行、每一列、每个 3×3 小宫都没有重复数字。深色数字是题目给定的，无法修改。</p><p>「选格填数」先点格再选数字；「连续填数」先选数字，再连续点击目标格，再点同一数字可取消选择。开启蓝色「笔记」模式可记录候选数；连续填数也支持笔记。</p><p>正式填写的数字会立即核对唯一解，错误会标红；笔记不判错。</p><p>电脑快捷键：数字 1～9 输入，方向键移动，N 切换笔记，Backspace 擦除，Ctrl / ⌘ + Z 撤销。</p><p>完成后可保存棋盘图片，也可在主页「通关记录」查看最近 30 局。每道题实时生成，经过唯一解和基础逻辑可解检查。关闭后可以从主页「继续游戏」找回进度。「还剩」是待填写或改正的格子数，数字键上的「余」是该数字还需正确填写的个数。暂停后棋盘保持清晰可见，停止计时和填写；点击「休息一下」可遮住棋盘，点击计时器旁的继续按钮恢复。</p>",
     "开始思考",
   );
 $("new-game").onclick = () => {
@@ -434,7 +496,15 @@ $("cover-action").onclick = () => {
   }
 };
 window.addEventListener("keydown", (e) => {
-  if (onHome || $("dialog").open || loading || paused || !game || game.finished)
+  if (
+    onHome ||
+    $("dialog").open ||
+    $("records-dialog").open ||
+    loading ||
+    paused ||
+    !game ||
+    game.finished
+  )
     return;
   if (
     e.target.closest("button") &&
@@ -450,7 +520,7 @@ window.addEventListener("keydown", (e) => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (/^[1-9]$/.test(e.key)) {
     e.preventDefault();
-    input(Number(e.key));
+    chooseDigit(Number(e.key));
   } else if (e.key.toLowerCase() === "n") $("notes").click();
   else if (["Backspace", "Delete"].includes(e.key)) {
     e.preventDefault();
@@ -478,7 +548,8 @@ setInterval(() => {
     !paused &&
     !game.finished &&
     !document.hidden &&
-    !$("dialog").open
+    !$("dialog").open &&
+    !$("records-dialog").open
   ) {
     game.seconds++;
     updateTimer();

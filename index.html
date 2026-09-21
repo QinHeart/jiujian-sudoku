@@ -3,22 +3,25 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#f5f3ec" />
+    <meta name="theme-color" content="#f3f6fc" />
     <title>九间 · 数独</title>
     <meta name="description" content="一局数独，一刻专注。打开即玩。" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="九间" />
     <meta property="og:title" content="九间 · 数独" />
     <meta property="og:description" content="一局数独，一刻专注。打开即玩。" />
-    <meta property="og:url" content="https://qinheart.github.io/jiujian-sudoku/" />
+    <meta
+      property="og:url"
+      content="https://qinheart.github.io/jiujian-sudoku/"
+    />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="九间 · 数独" />
     <meta name="twitter:description" content="一局数独，一刻专注。打开即玩。" />
     <link rel="canonical" href="https://qinheart.github.io/jiujian-sudoku/" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=20260921" />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%233d6656'/%3E%3Ctext x='32' y='45' text-anchor='middle' fill='%23fff' font-size='42'%3E九%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%233267db'/%3E%3Ctext x='32' y='45' text-anchor='middle' fill='%23fff' font-size='42'%3E九%3C/text%3E%3C/svg%3E"
     />
   </head>
   <body>
@@ -41,56 +44,78 @@
         <button class="secondary" id="home-new">
           开始新一局 <span aria-hidden="true">↗</span>
         </button>
-        
+
+        <button class="plain" id="home-records">通关记录</button>
       </section>
       <section class="game" id="game-screen" aria-label="数独游戏" hidden>
         <div class="game-top">
           <div>
             <span class="tag">日常练习</span
-            ><span id="pause-state" hidden>计时已停</span><button class="plain" id="rest" hidden>休息一下</button>
+            ><span id="pause-state" hidden>计时已停</span
+            ><button class="plain" id="rest" hidden>休息一下</button>
           </div>
           <div class="time">
             <span aria-hidden="true">◷</span> <span id="timer">00:00</span
             ><button class="pause" id="pause" aria-label="暂停游戏">Ⅱ</button>
           </div>
         </div>
-        <div class="board-wrap">
-          <div
-            id="board"
-            class="board"
-            role="group"
-            aria-label="九乘九数独棋盘"
-          ></div>
-          <div id="cover" class="cover">
-            <span class="cover-mark">九</span>
-            <h2 id="cover-title">正在铺开新一局</h2>
-            <p id="cover-text">给数字一点时间，找到各自的位置。</p>
-            <button class="primary" id="cover-action" hidden>继续游戏</button
-            ><button class="plain" id="think" hidden>
-              看棋盘思考 · 保持暂停
-            </button>
+        <div class="play-area">
+          <div class="board-wrap">
+            <div
+              id="board"
+              class="board"
+              role="group"
+              aria-label="九乘九数独棋盘"
+            ></div>
+            <div id="cover" class="cover">
+              <span class="cover-mark">九</span>
+              <h2 id="cover-title">正在铺开新一局</h2>
+              <p id="cover-text">给数字一点时间，找到各自的位置。</p>
+              <button class="primary" id="cover-action" hidden>继续游戏</button
+              ><button class="plain" id="think" hidden>
+                看棋盘思考 · 保持暂停
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="board-meta">
-          <span id="status" role="status" aria-live="polite"
-            >选择空格，填入数字</span
-          ><span id="progress">0 / 81</span>
-        </div>
-        <div class="progress-track"><div id="progress-bar"></div></div>
-        <div class="controls">
-          <button id="notes" aria-pressed="false">
-            <span>✎</span>笔记 <small id="note-state">关</small></button
-          ><button id="erase"><span>⌫</span>擦除</button
-          ><button id="undo"><span>↶</span>撤销</button
-          ><button id="new-game"><span>＋</span>新一局</button>
-        </div>
-        <div class="keypad" id="keypad" aria-label="数字键盘"></div>
-        <section id="completion" class="completion" aria-label="通关结果" hidden>
-          <div><h2>刚刚好，全部归位。</h2><p id="completion-time"></p></div>
-          <button class="primary" id="finish-next">再来一局</button>
-        </section>
-        <div class="game-footer">
-          <span><i></i>进度自动保存在此设备</span>
+          <div class="play-panel">
+            <div class="board-meta">
+              <span id="status" role="status" aria-live="polite"
+                >选择空格，填入数字</span
+              ><span id="progress">0 / 81</span>
+            </div>
+            <div class="progress-track"><div id="progress-bar"></div></div>
+            <div class="input-modes" role="group" aria-label="填数方式">
+              <button id="mode-cell" aria-pressed="true">选格填数</button>
+              <button id="mode-digit" aria-pressed="false">连续填数</button>
+            </div>
+            <div class="controls">
+              <button id="notes" aria-pressed="false">
+                <span>✎</span>笔记 <small id="note-state">关</small></button
+              ><button id="erase"><span>⌫</span>擦除</button
+              ><button id="undo"><span>↶</span>撤销</button
+              ><button id="new-game"><span>＋</span>新一局</button>
+            </div>
+            <div class="keypad" id="keypad" aria-label="数字键盘"></div>
+            <section
+              id="completion"
+              class="completion"
+              aria-label="通关结果"
+              hidden
+            >
+              <div>
+                <h2>刚刚好，全部归位。</h2>
+                <p id="completion-time"></p>
+              </div>
+              <div class="completion-actions">
+                <button class="primary" id="finish-save">保存图片</button
+                ><button class="secondary" id="finish-next">再来一局</button>
+              </div>
+              <span id="export-status" role="status"></span>
+            </section>
+            <div class="game-footer">
+              <span><i></i>进度自动保存在此设备</span>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -106,7 +131,27 @@
         ><button class="primary" id="confirm">知道了</button>
       </div>
     </dialog>
+    <dialog id="records-dialog" aria-labelledby="records-title">
+      <form method="dialog">
+        <button class="close" aria-label="关闭记录">×</button>
+      </form>
+      <h2 id="records-title">通关记录</h2>
+      <p class="records-caption">保存在此设备 · 最近 30 局</p>
+      <div id="records-list"></div>
+      <section id="record-detail" hidden>
+        <button class="plain" id="record-back">← 返回记录</button>
+        <p id="record-info"></p>
+        <div
+          id="record-board"
+          class="record-board"
+          aria-label="已完成的棋盘"
+        ></div>
+        <button class="primary" id="record-save">保存图片</button>
+        <p id="record-export-status" role="status"></p>
+      </section>
+    </dialog>
     <script src="engine.js"></script>
-    <script src="app.js"></script>
+    <script src="records.js?v=20260921"></script>
+    <script src="app.js?v=20260921"></script>
   </body>
 </html>
