@@ -18,15 +18,15 @@
     <meta name="twitter:title" content="九间 · 数独" />
     <meta name="twitter:description" content="一局数独，一刻专注。打开即玩。" />
     <link rel="canonical" href="https://qinheart.github.io/jiujian-sudoku/" />
-    <link rel="stylesheet" href="style.css?v=20260921-focus" />
+    <link rel="stylesheet" href="style.css?v=20260921-toolbar" />
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%233267db'/%3E%3Ctext x='32' y='45' text-anchor='middle' fill='%23fff' font-size='42'%3E九%3C/text%3E%3C/svg%3E"
     />
   </head>
   <body>
-    <header class="header">
-      <nav class="header-actions">
+    <header class="header" id="home-header">
+      <nav class="header-actions" id="navigation">
         <button class="plain" id="back-home" hidden>主页</button
         ><button class="plain" id="help">玩法 <span>↗</span></button>
       </nav>
@@ -45,13 +45,28 @@
       </section>
       <section class="game" id="game-screen" aria-label="数独游戏" hidden>
         <div class="game-top">
-          <div>
+          <div class="game-top-left">
+            <details id="game-menu" class="game-menu">
+              <summary aria-label="游戏菜单">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="5" cy="12" r="1.6" />
+                  <circle cx="12" cy="12" r="1.6" />
+                  <circle cx="19" cy="12" r="1.6" />
+                </svg>
+              </summary>
+              <div id="game-menu-content">
+                <button class="plain" id="rest" hidden>休息一下</button>
+              </div>
+            </details>
             <span class="tag">日常练习</span
-            ><span id="pause-state" hidden>计时已停</span
-            ><button class="plain" id="rest" hidden>休息一下</button>
+            ><span id="pause-state" hidden>计时已停</span>
           </div>
           <div class="time">
-            <span aria-hidden="true">◷</span> <span id="timer">00:00</span
+            <svg class="clock-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+            <span id="timer">00:00</span
             ><button class="pause" id="pause" aria-label="暂停游戏">Ⅱ</button>
           </div>
         </div>
@@ -148,6 +163,6 @@
     </dialog>
     <script src="engine.js"></script>
     <script src="records.js?v=20260921"></script>
-    <script src="app.js?v=20260921"></script>
+    <script src="app.js?v=20260921-toolbar"></script>
   </body>
 </html>

@@ -197,6 +197,12 @@ $("mode-digit").onclick = () => {
   render();
 };
 function render() {
+  $("home-header").hidden = !onHome;
+  const navTarget = onHome ? $("home-header") : $("game-menu-content");
+  if ($("navigation").parentElement !== navTarget)
+    navTarget.prepend($("navigation"));
+  if (onHome) $("game-menu").open = false;
+  $("game-screen").classList.toggle("is-paused", paused);
   $("home").hidden = !onHome;
   $("game-screen").hidden = onHome;
   $("back-home").hidden = onHome;
@@ -392,6 +398,7 @@ $("undo").onclick = () => {
   }
 };
 function modal(title, body, label, action, cancel = false) {
+  $("game-menu").open = false;
   $("dialog-title").textContent = title;
   $("dialog-body").innerHTML = body;
   $("confirm").textContent = label;
@@ -482,6 +489,7 @@ $("pause").onclick = () => {
   render();
 };
 $("rest").onclick = () => {
+  $("game-menu").open = false;
   showCover("让思绪歇一会儿", "数字会在这里，等你回来。", "继续游戏");
   render();
 };
@@ -495,7 +503,16 @@ $("cover-action").onclick = () => {
     start();
   }
 };
+document.addEventListener("click", (e) => {
+  if (!$("game-menu").contains(e.target)) $("game-menu").open = false;
+});
 window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && $("game-menu").open) {
+    $("game-menu").open = false;
+    $("game-menu").querySelector("summary").focus();
+    return;
+  }
+  if ($("game-menu").open) return;
   if (
     onHome ||
     $("dialog").open ||

@@ -832,3 +832,123 @@ dialog::backdrop {
     font-size: 21px;
   }
 }
+
+/* One toolbar above the board, without a separate navigation row. */
+.game {
+  padding-top: 12px;
+}
+.game-top {
+  height: 40px;
+}
+.game-top-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.time {
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #344e71;
+}
+.clock-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pause {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 22px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+}
+.pause:hover:not(:disabled) {
+  background: #e3ebf9;
+}
+.game-menu {
+  position: relative;
+}
+.game-menu summary {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  list-style: none;
+  cursor: pointer;
+  border-radius: 6px;
+  color: #526780;
+}
+.game-menu summary::-webkit-details-marker {
+  display: none;
+}
+.game-menu summary svg {
+  width: 23px;
+  height: 23px;
+  fill: currentColor;
+}
+.game-menu summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.game-menu[open] summary,
+.game-menu summary:hover {
+  background: #e3ebf9;
+}
+#game-menu-content {
+  position: absolute;
+  z-index: 8;
+  top: 42px;
+  left: 0;
+  min-width: 140px;
+  padding: 6px;
+  background: white;
+  border: 1px solid #d3def0;
+  box-shadow: 0 8px 24px #24324a1c;
+  border-radius: 9px;
+}
+#game-menu-content .header-actions {
+  flex-direction: column;
+  gap: 0;
+}
+#game-menu-content button {
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  font-size: 13px;
+  min-height: 40px;
+  border-radius: 5px;
+  text-decoration: none;
+  margin: 0;
+}
+#game-menu-content button:hover {
+  background: #eef3fc;
+}
+#game-menu-content #help span {
+  display: none;
+}
+.game-menu:not([open]) #game-menu-content {
+  display: none;
+}
+.is-paused .game-top .tag {
+  display: none;
+}
+#pause-state {
+  font-size: 11px;
+  margin-left: 0;
+  white-space: nowrap;
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .game {
+    padding-top: 8px;
+  }
+}
