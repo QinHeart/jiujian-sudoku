@@ -249,6 +249,10 @@ function render() {
       "cell" +
       (game.puzzle[i] ? " given" : "") +
       (selected >= 0 && Sudoku.peers[selected].includes(i) ? " related" : "") +
+      (selected >= 0 &&
+      (Math.floor(i / 9) === Math.floor(selected / 9) || i % 9 === selected % 9)
+        ? " aligned"
+        : "") +
       (value && value === n ? " same" : "") +
       (i === selected ? " selected" : "") +
       (bad.has(i) ? " conflict" : "");

@@ -194,6 +194,9 @@ main {
   border-bottom: 0;
 }
 .cell.related {
+  background: #f8faff;
+}
+.cell.aligned {
   background: #f0f5fd;
 }
 .cell.same {
